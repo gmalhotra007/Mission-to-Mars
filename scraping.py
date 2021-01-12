@@ -104,9 +104,39 @@ def mars_facts():
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
 
-
+def hemisphere_images(browser):
+    # Setup splinter
+    # executable_path = {'executable_path': ChromeDriverManager().install()}
+    browser = Browser('chrome', 'chromedriver.exe', headless=False)
+ 
+    # Visit URL
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    browser.visit(url)
+ 
+    hemisphere_image_urls = []
+ 
+    # html = browser.html
+    # image_soup = soup(html, 'html.parser')
+    links = browser.find_by_css("a.product-item h3")
+ 
+    try:
+ 
+        for i in range(len(links)):
+ 
+            hemisphere = {}
+            browser.find_by_css("a.product-item h3")[i].click()
+            sample_elem = browser.links.find_by_text('Sample').first
+            hemisphere['img_url'] = sample_elem['href']
+            hemisphere['title'] = browser.find_by_css("h2.title").text
+            hemisphere_image_urls.append(hemisphere)
+            browser.back()
+ 
+    except AttributeError:
+        return None
+    # browser.quit()
+    return hemisphere_image_urls
 if __name__ == "__main__":
-
+ 
     # If running as script, print scraped data
     print(scrape_all())
 
